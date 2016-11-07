@@ -7,10 +7,31 @@ require "redditkit"
 
 Dotenv.load
 
-client = RedditKit::Client.new ENV["USERNAME"], ENV["PASSWORD"]
+@client = RedditKit::Client.new ENV["USERNAME"], ENV["PASSWORD"]
 
-content = client.my_content(:category => "saved", :limit => 100)
+@after_id = nil
 
-subreddits = content.group_by { |x| x.attributes[:subreddit] }
+@paginated_results = []
 
-puts subreddits.keys
+def get_saved
+  options = { :category => "saved", :limit => 100 }
+  options[:after] = @after_id if @after_id
+
+  results = @client.my_content(options).results
+
+  return nil if results.empty?
+  
+  @paginated_results.push results
+
+  results.last.attributes[:name]
+end
+
+loop do
+  last_item_id = get_saved
+
+  break if last_item_id.nil?
+
+  @after_id = last_item_id
+end
+
+puts @paginated_results.length
