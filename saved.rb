@@ -5,6 +5,7 @@ require 'bundler/setup'
 require "dotenv"
 require "redditkit"
 require "csv"
+require "cgi"
 
 Dotenv.load
 
@@ -13,14 +14,6 @@ Dotenv.load
 @after_id = nil
 
 @paginated_results = []
-
-def raw_json(string)
-  return if string.nil?
-
-  string.gsub("&lt;", "<")
-        .gsub("&gt;", ">")
-        .gsub("&amp;", "&")
-end
 
 def get_saved
   options = { :category => "saved", :limit => 100 }
@@ -53,11 +46,11 @@ CSV.open("saved_items.csv", "w") do |csv|
   ]
 
   saved_items.each do |item|
-    item.attributes[:body]       = raw_json(item.attributes[:body])
-    item.attributes[:link_title] = raw_json(item.attributes[:link_title])
-    item.attributes[:link_url]   = raw_json(item.attributes[:link_url])
-    item.attributes[:url]        = raw_json(item.attributes[:url])
-    item.attributes[:title]      = raw_json(item.attributes[:title])
+    [:body, :link_title, :link_url, :url, :title].each do |key|
+      if item.attributes.has_key?(key)
+        item.attributes[key] = CGI.unescapeHTML(item.attributes[key])
+      end
+    end
 
     values = item.attributes.values_at(
       :name, :kind, :id, :subreddit,
