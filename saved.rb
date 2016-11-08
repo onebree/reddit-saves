@@ -4,6 +4,7 @@ require 'rubygems'
 require 'bundler/setup'
 require "dotenv"
 require "redditkit"
+require "csv"
 
 Dotenv.load
 
@@ -34,4 +35,14 @@ loop do
   @after_id = last_item_id
 end
 
-puts @paginated_results.length
+saved_items = @paginated_results.flatten
+
+CSV.open("saved_items.csv", "w") do |csv|
+  csv << ["name", "title", "subreddit", "permalink", "url"]
+
+  saved_items.each do |item|
+    values = item.attributes.values_at(:name, :title, :subreddit, :permalink, :url)
+
+    csv << values
+  end
+end
