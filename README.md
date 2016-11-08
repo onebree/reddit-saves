@@ -28,3 +28,9 @@ Create and setup the database:
 $ createdb reddit-saves-test
 $ bundle exec rake db:setup
 ```
+
+Import data from the CSV to the database:
+
+```
+$ bundle exec rake db:import
+```
