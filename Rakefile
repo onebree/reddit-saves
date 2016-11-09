@@ -22,7 +22,7 @@ namespace :db do
 
     DB.create_table(:links) do
       primary_key :id
-      String  :reddit_id, :unqiue => true
+      String  :reddit_id, :unique => true
       String  :kind
       String  :name
       String  :subreddit
@@ -36,36 +36,35 @@ namespace :db do
   task :import do
     DB = Sequel.connect(ENV["DATABASE"])
 
-    DB.transaction do
-      comments = DB.from(:comments)
-      links    = DB.from(:links)
+    require_relative "comment"
+    require_relative "link"
 
+    DB.transaction do
       CSV.foreach("saved_items.csv", :headers => true) do |row|
         case row["kind"]
         when "t1"
-          comments.insert(
-            :id         => row["id"],
-            :kind       => row["kind"],
-            :name       => row["name"],
-            :subreddit  => row["subreddit"],
-            :link_id    => row["link_id"],
-            :body       => row["body"],
-            :link_title => row["link_title"],
-            :link_url   => row["link_url"]
-          )
+          Comment.find_or_create(:reddit_id => row["reddit_id"]) { |c|
+            c.kind       = row["kind"]
+            c.name       = row["name"]
+            c.subreddit  = row["subreddit"]
+            c.body       = row["body"]
+            c.link_id    = row["link_id"]
+            c.link_title = row["link_title"]
+            c.link_url   = row["link_url"]
+          }
         when "t3"
-          links.insert(
-            :id         => row["id"],
-            :kind       => row["kind"],
-            :name       => row["name"],
-            :subreddit  => row["subreddit"],
-            :is_self    => row["is_self"] == "true",
-            :permalink  => row["permalink"],
-            :url        => row["url"],
-            :title      => row["title"]
-          )
+          Link.find_or_create(:reddit_id => row["reddit_id"]) { |l|
+            l.kind       = row["kind"]
+            l.name       = row["name"]
+            l.subreddit  = row["subreddit"]
+            l.title      = row["title"]
+            l.is_self    = row["is_self"]
+            l.permalink  = row["permalink"]
+            l.url        = row["url"]
+          }
         end
       end
     end
   end
+
 end
