@@ -9,25 +9,27 @@ namespace :db do
     DB = Sequel.connect(ENV["DATABASE"])
 
     DB.create_table(:comments) do
-      String :id,         :primary_key => true
+      primary_key :id
+      String :reddit_id,  :unique => true
       String :kind
       String :name
       String :subreddit
-      String :link_id
       String :body,       :text => true
+      String :link_id
       String :link_title, :text => true
       String :link_url,   :text => true
     end
 
     DB.create_table(:links) do
-      String  :id,        :primary_key => true
+      primary_key :id
+      String  :reddit_id, :unqiue => true
       String  :kind
       String  :name
       String  :subreddit
+      String  :title,     :text => true
       Boolean :is_self
       String  :permalink, :text => true
       String  :url,       :text => true
-      String  :title,     :text => true
     end
   end
 

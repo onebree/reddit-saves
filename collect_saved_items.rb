@@ -40,9 +40,9 @@ saved_items = @paginated_results.flatten
 
 CSV.open("saved_items.csv", "w") do |csv|
   csv << [
-    "name", "kind", "id", "subreddit",            # Comments and links
-    "link_id", "body", "link_title", "link_url",  # Comments only
-    "is_self", "permalink", "url", "title"        # Links only
+    "name",  "kind",    "reddit_id",  "subreddit", # Comments and links
+    "body",  "link_id", "link_title", "link_url",  # Comments only
+    "title", "is_self", "permalink",  "url"        # Links only
   ]
 
   saved_items.each do |item|
@@ -53,9 +53,9 @@ CSV.open("saved_items.csv", "w") do |csv|
     end
 
     values = item.attributes.values_at(
-      :name, :kind, :id, :subreddit,
-      :link_id, :body, :link_title, :link_url,
-      :is_self, :permalink, :url, :title
+      :name,  :kind,    :reddit_id,  :subreddit,
+      :body,  :link_id, :link_title, :link_url,
+      :title, :is_self, :permalink,  :url
     )
 
     csv << values
