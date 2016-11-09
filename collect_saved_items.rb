@@ -53,7 +53,7 @@ CSV.open("saved_items.csv", "w") do |csv|
     end
 
     values = item.attributes.values_at(
-      :name,  :kind,    :reddit_id,  :subreddit,
+      :name,  :kind,    :id,         :subreddit,
       :body,  :link_id, :link_title, :link_url,
       :title, :is_self, :permalink,  :url
     )
