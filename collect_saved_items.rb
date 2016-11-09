@@ -28,6 +28,7 @@ def get_saved
   results.last.attributes[:name]
 end
 
+
 loop do
   last_item_id = get_saved
 
@@ -38,7 +39,11 @@ end
 
 saved_items = @paginated_results.flatten
 
-CSV.open("saved_items.csv", "w") do |csv|
+csv_file = "saved_items.csv"
+
+File.delete(csv_file) if File.exist?(csv_file)
+
+CSV.open(csv_file, "w") do |csv|
   csv << [
     "name",  "kind",    "reddit_id",  "subreddit", # Comments and links
     "body",  "link_id", "link_title", "link_url",  # Comments only
